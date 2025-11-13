@@ -1,0 +1,61 @@
+import os
+import shutil
+
+# File extensions categorized
+FILE_TYPES = {
+    "Images": [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+    "Documents": [".pdf", ".docx", ".doc", ".txt", ".xlsx", ".csv", ".pptx"],
+    "Videos": [".mp4", ".avi", ".mov", ".mkv"],
+    "Audio": [".mp3", ".wav", ".aac"],
+    "Archives": [".zip", ".rar", ".7z"],
+    "Code": [".py", ".js", ".html", ".css", ".json"],
+}
+
+
+def create_folders(base_path):
+    """Create required folders if they don't exist."""
+    for folder in FILE_TYPES.keys():
+        folder_path = os.path.join(base_path, folder)
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+
+    other_path = os.path.join(base_path, "Others")
+    if not os.path.exists(other_path):
+        os.mkdir(other_path)
+
+
+def organize_files(base_path):
+    """Move files to folders based on extension."""
+    files = os.listdir(base_path)
+
+    for file in files:
+        full_path = os.path.join(base_path, file)
+
+        if os.path.isfile(full_path):
+            ext = os.path.splitext(file)[1].lower()
+            moved = False
+
+            for folder, extensions in FILE_TYPES.items():
+                if ext in extensions:
+                    shutil.move(full_path, os.path.join(base_path, folder, file))
+                    print(f"Moved {file} -> {folder}")
+                    moved = True
+                    break
+
+            if not moved:
+                shutil.move(full_path, os.path.join(base_path, "Others", file))
+                print(f"Moved {file} -> Others")
+
+
+if __name__ == "__main__":
+    path = input("Enter folder path to organize: ")
+
+    if os.path.exists(path):
+        create_folders(path)
+        organize_files(path)
+        print("\nAll files organized successfully!")
+    else:
+        print("Path not found!")
+
+    
+        
